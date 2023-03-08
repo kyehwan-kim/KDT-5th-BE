@@ -1,7 +1,7 @@
 // @ts-check
 function multiplication(number, callback) {
   let answer = 0;
-  setTimeout(function () {
+  setTimeout(() => {
     answer = number * number;
     callback(answer);
   }, 2000);
