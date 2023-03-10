@@ -25,23 +25,49 @@ router.get('/id/:id', (req, res) => {
   if (userData) {
     res.send(userData);
   } else {
-    res.send('ID를 못찾고있어요.');
+    const err = new Error('해당 ID를 가진 회원이 없습니다.');
+    err.statusCode = 404;
+    throw err;
   }
 });
 
 router.post('/add', (req, res) => {
-  if (req.query.id && req.query.name && req.query.email) {
-    const newUser = {
-      id: req.query.id,
-      name: req.query.name,
-      email: req.query.email,
-    };
+  if (Object.keys(req.query).length >= 1) {
+    if (req.query.id && req.query.name && req.query.email) {
+      const newUser = {
+        id: req.query.id,
+        name: req.query.name,
+        email: req.query.email,
+      };
 
-    USER.push(newUser);
+      USER.push(newUser);
 
-    res.send('회원 추가 완fy');
+      res.redirect('/users');
+    } else {
+      const err = new Error('폼 태그 입력을 확인하세요.');
+      err.statusCode = 400;
+      throw err;
+    }
+  } else if (req.body) {
+    if (req.body.id && req.body.name && req.body.email) {
+      const newUser = {
+        id: req.body.id,
+        name: req.body.name,
+        email: req.body.email,
+      };
+
+      USER.push(newUser);
+
+      res.redirect('/users');
+    } else {
+      const err = new Error('폼 태그 입력을 확인하세요.');
+      err.statusCode = 400;
+      throw err;
+    }
   } else {
-    res.send('쿼리 입력이 잘못 되었습니다.');
+    const err = new Error('데이터가 입력되지 않았습니다.');
+    err.statusCode = 400;
+    throw err;
   }
 });
 
@@ -56,10 +82,14 @@ router.put('/modify/:id', (req, res) => {
       };
       res.send('회원 정보 수정 완료!');
     } else {
-      res.send('해당 ID를 가진 회원이 존재하지 않습니다!');
+      const err = new Error('해당 ID를 가진 회원이 없습니다.');
+      err.statusCode = 404;
+      throw err;
     }
   } else {
-    res.send('쿼리 입력이 잘못 되었습니다.');
+    const err = new Error('쿼리 입력이 잘못 되었습니다.');
+    err.statusCode = 400;
+    throw err;
   }
 });
 
@@ -69,21 +99,23 @@ router.delete('/delete/:id', (req, res) => {
     USER.splice(userIndex, 1);
     res.send('회원 삭제 완료!');
   } else {
-    res.send('해당 ID를 가진 회원이 존재하지 않습니다!');
+    const err = new Error('해당 ID를 가진 회원이 없습니다.');
+    err.statusCode = 400;
+    throw err;
   }
 });
 
-router.get('/show', (req, res) => {
-  res.writeHead(200, { 'content-type': 'text/html; charset=UTF-8' });
-  res.write('<h1>Hello, Dynamic Web Page</h1>');
+// router.get('/show', (req, res) => {
+//   res.writeHead(200, { 'content-type': 'text/html; charset=UTF-8' });
+//   res.write('<h1>Hello, Dynamic Web Page</h1>');
 
-  for (let i = 0; i < USER.length; i += 1) {
-    res.write(`<h2>USER ID is ${USER[i].id}</h2>`);
-    res.write(`<h2>USER NAME is ${USER[i].name}</h2>`);
-    res.write(`<h2>USER EMAIL is ${USER[i].email}</h2>`);
-  }
-  res.end('');
-});
+//   for (let i = 0; i < USER.length; i += 1) {
+//     res.write(`<h2>USER ID is ${USER[i].id}</h2>`);
+//     res.write(`<h2>USER NAME is ${USER[i].name}</h2>`);
+//     res.write(`<h2>USER EMAIL is ${USER[i].email}</h2>`);
+//   }
+//   res.end('');
+// });
 
 // router.get('/ejs', (req, res) => {
 //   const userCounts = USER_ARR.length;
